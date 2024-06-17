@@ -6,6 +6,10 @@
 
 declare(strict_types=1);
 
+namespace app\controllers\auth;
+
+
+
 use app\core\Controller;
 use app\models\Auth;
 use app\models\User;
@@ -17,7 +21,7 @@ class Login extends Controller
     public function __construct()
     {
         //? check if user is logged in
-        if (Auth::logged_in()) return $this->redirect('dashboard');
+        //if (Auth::logged_in()) return $this->redirect('dashboard');
 
         $this->jsonData = file_get_contents("php://input");
         $this->jsonData = json_decode($this->jsonData);
@@ -57,6 +61,7 @@ class Login extends Controller
                 );
             }
         }
+        $user = new User_tokens();
         return $this->view('auth/login');
     }
 }

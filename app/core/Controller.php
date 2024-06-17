@@ -15,10 +15,10 @@ class Controller
         extract($data);
 
 
-        if (file_exists("../app/views/" . $view . ".php")) {
-            require("../app/views/" . $view . ".php");
+        if (file_exists("app/views/" . $view . ".php")) {
+            require("app/views/" . $view . ".php");
         } else {
-            require("../app/views/404.php");
+            require("app/views/404.php");
         }
     }
 

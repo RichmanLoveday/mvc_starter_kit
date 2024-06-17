@@ -16,14 +16,11 @@ class App
     {
         $url = $this->getUrl();
 
-        // show($url);
-        // die;
-
-        if (isset($url[0])) {
+        if (isset($url) && $url != []) {
             $firstPath = ucwords($url[0]);
             $secondPath = isset($url[1]) ? ucwords($url[1]) : ucwords($url[0]);
-            $controllerPathWithFolder = "../app/Controllers/{$firstPath}/{$secondPath}.php";
-            $controllerPathWithoutFolder = "../app/Controllers/{$firstPath}.php";
+            $controllerPathWithFolder = "app/Controllers/{$firstPath}/{$secondPath}.php";
+            $controllerPathWithoutFolder = "app/Controllers/{$firstPath}.php";
 
             if (file_exists($controllerPathWithFolder)) {
                 require $controllerPathWithFolder;
@@ -43,6 +40,10 @@ class App
                 }
 
                 unset($url[0], $url[1]);
+
+                //? return the controller from the url
+                $this->params = $url ? array_values($url) : [];
+                return  call_user_func_array([$this->controller, $this->method], $this->params);
             } elseif (file_exists($controllerPathWithoutFolder)) {
                 require $controllerPathWithoutFolder;
                 $controllerClass = "App\\Controllers\\" . $firstPath;
@@ -61,16 +62,27 @@ class App
                 }
 
                 unset($url[0]);
+
+                //? return the controller from the url
+                $this->params = $url ? array_values($url) : [];
+                return  call_user_func_array([$this->controller, $this->method], $this->params);
             } else {
                 $this->show404();
                 return;
             }
         }
 
+
+        //? return default controller
+        require "app/Controllers/{$this->controller}.php";
+        $controllerClass = "App\\Controllers\\" . $this->controller;
+        $this->controller = new $controllerClass();
+
         $this->params = $url ? array_values($url) : [];
 
         call_user_func_array([$this->controller, $this->method], $this->params);
     }
+
 
     private function getUrl()
     {

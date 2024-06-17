@@ -1,9 +1,12 @@
 <?php
+/*
+** Home Controller
+*
+*/
 
 namespace app\controllers;
 
 use app\core\Controller;
-
 
 class HomeController extends Controller
 {
