@@ -8,9 +8,6 @@ declare(strict_types=1);
 
 namespace app\core;
 
-use app\models\Auth;
-use app\models\ChatRoom;
-
 class Controller
 {
     public function view(string $view, array $data = []): void
@@ -44,18 +41,6 @@ class Controller
     public function controller_name()
     {
         return get_class($this);
-    }
-
-
-    public function getAllUnreadMessages(array $chatsMessages): int
-    {
-        $chats = 0;
-        foreach ($chatsMessages as $chat) {
-            if ($chat->unread > 0) {
-                $chats = $chats + $chat->unread;
-            }
-        }
-        return $chats;
     }
 
 

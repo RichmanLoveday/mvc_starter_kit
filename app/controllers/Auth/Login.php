@@ -57,6 +57,6 @@ class Login extends Controller
                 );
             }
         }
-        return $this->view('login-v2');
+        return $this->view('auth/login');
     }
 }

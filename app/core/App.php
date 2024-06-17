@@ -1,18 +1,15 @@
 <?php
-/*
-** Routing Loader or class Loader
-*
-*/
 
 declare(strict_types=1);
 
-namespace app\core;
+namespace App\core;
+
+use app\core\Controller;
 
 class App
 {
-
-    private $controller;
-    private $method;
+    protected $controller = 'HomeController';  // Default controller
+    protected $method = 'index';  // Default method
     private $params = [];
 
     public function __construct()
@@ -22,56 +19,69 @@ class App
         // show($url);
         // die;
 
-        //? Handle controller
-        if (isset($url) && $url != []) {
-            if (file_exists("../app/controllers/" . ucwords($url[0]) . ".php")) {
-                $this->controller = ucwords($url[0]);
-                require "../app/controllers/" . $this->controller . ".php";
-                $this->controller = new $this->controller();
+        if (isset($url[0])) {
+            $firstPath = ucwords($url[0]);
+            $secondPath = isset($url[1]) ? ucwords($url[1]) : ucwords($url[0]);
+            $controllerPathWithFolder = "../app/Controllers/{$firstPath}/{$secondPath}.php";
+            $controllerPathWithoutFolder = "../app/Controllers/{$firstPath}.php";
+
+            if (file_exists($controllerPathWithFolder)) {
+                require $controllerPathWithFolder;
+                $controllerClass = "App\\Controllers\\{$firstPath}\\" . $secondPath;
+                $this->controller = new $controllerClass();
+
+                // Handle method
+                if (isset($url[2])) {
+                    if (method_exists($this->controller, $url[2])) {
+
+                        $this->method = strtolower($url[2]);
+                        unset($url[2]);
+                    } else {
+                        $this->show404();
+                        return;
+                    }
+                }
+
+                unset($url[0], $url[1]);
+            } elseif (file_exists($controllerPathWithoutFolder)) {
+                require $controllerPathWithoutFolder;
+                $controllerClass = "App\\Controllers\\" . $firstPath;
+                $this->controller = new $controllerClass();
+
+                // Handle method
+                if (isset($url[1])) {
+                    if (method_exists($this->controller, $url[1])) {
+
+                        $this->method = strtolower($url[1]);
+                        unset($url[1]);
+                    } else {
+                        $this->show404();
+                        return;
+                    }
+                }
 
                 unset($url[0]);
             } else {
-                $controller = new Controller();
-                $controller->view('404', ['pageTitle' => null]);
-                exit;
+                $this->show404();
+                return;
             }
-        } else {
-            $controller = new Controller();
-            $controller->view('404', ['pageTitle' => null]);
-            exit;
         }
 
-
-        // Handle Method
-        if (isset($url[1])) {
-            if (method_exists($this->controller, $url[1])) {
-                $this->method = strtolower($url[1]);
-                unset($url[1]);
-            } else {
-                $controller = new Controller();
-                $controller->view('404', ['pageTitle' => null]);
-                exit;
-            }
-        } else {
-            $controller = new Controller();
-            $controller->view('404', ['pageTitle' => null]);
-            exit;
-        }
-
-
-        $url = $url ? array_values($url) : [];
-        $this->params = $url;
-
-        // echo '<pre>';
-        // print_r($url);
-        // echo '<pre/>';
+        $this->params = $url ? array_values($url) : [];
 
         call_user_func_array([$this->controller, $this->method], $this->params);
     }
 
     private function getUrl()
     {
-        $url = isset($_GET['url']) ? clean_url($_GET['url']) : [];
-        return $url;
+        $url = isset($_GET['url']) ? filter_var(rtrim($_GET['url'], '/'), FILTER_SANITIZE_URL) : null;
+        return $url ? explode('/', $url) : [];
+    }
+
+    private function show404()
+    {
+        $controller = new Controller();
+        $controller->view('404', ['pageTitle' => null]);
+        exit;
     }
 }

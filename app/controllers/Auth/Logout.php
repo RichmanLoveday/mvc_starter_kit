@@ -13,6 +13,6 @@ class Logout extends Controller
     public function __construct()
     {
         Auth::logout();
-        $this->redirect('login');
+        $this->redirect('auth/login');
     }
 }
