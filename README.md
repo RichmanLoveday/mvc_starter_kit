@@ -14,6 +14,9 @@ This is a simple MVC (Model-View-Controller) starter kit for PHP projects.
 my-mvc-project/
 ├── app/
 │ ├── Controllers/
+| |├── Auth/
+| | └── Login.php
+| |
 │ ├── Models/
 │ ├── Views/
 │ └── core/
