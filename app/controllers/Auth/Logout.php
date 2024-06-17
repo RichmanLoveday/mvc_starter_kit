@@ -4,6 +4,11 @@
 *
 */
 
+declare(strict_types=1);
+
+namespace app\controllers\auth;
+
+
 use app\core\Controller;
 use app\models\Auth;
 

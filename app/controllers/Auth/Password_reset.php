@@ -1,5 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
+namespace app\controllers\auth;
+
+
 use app\core\Controller;
 use app\models\Auth;
 use app\models\Mails;
@@ -14,8 +19,6 @@ class Password_reset extends Controller
 
     public function __construct()
     {
-        parent::__construct();
-
         $this->jsonData = file_get_contents("php://input");
         $this->jsonData = json_decode($this->jsonData);
         // $this->class = get_class();
